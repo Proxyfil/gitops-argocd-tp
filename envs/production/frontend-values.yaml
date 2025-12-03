@@ -1,0 +1,45 @@
+# Production environment values for Frontend
+
+replicaCount: 5
+
+image:
+  repository: nginx
+  tag: "alpine"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+config:
+  backendUrl: "http://backend-backend.production.svc.cluster.local:8080"
+  logLevel: "warn"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: www.votreapp.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: frontend-tls
+      hosts:
+        - www.votreapp.com
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+environment: production
+
+syncWave: "2"

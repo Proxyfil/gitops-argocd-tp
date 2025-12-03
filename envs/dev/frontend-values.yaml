@@ -1,0 +1,29 @@
+# Development environment values for Frontend
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "alpine"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+config:
+  backendUrl: "http://backend-backend:8080"
+  logLevel: "debug"
+
+ingress:
+  enabled: false
+
+autoscaling:
+  enabled: false
+
+environment: dev
+
+syncWave: "2"

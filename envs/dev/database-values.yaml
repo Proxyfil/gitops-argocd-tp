@@ -1,0 +1,28 @@
+# Development environment values for Database
+
+image:
+  repository: postgres
+  tag: "15-alpine"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+config:
+  database: "appdb"
+
+secrets:
+  username: "dev_user"
+  password: "dev_password_123"
+
+persistence:
+  enabled: true
+  size: 1Gi
+
+environment: dev
+
+syncWave: "0"

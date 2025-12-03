@@ -1,0 +1,37 @@
+# Production environment values for Backend
+
+replicaCount: 5
+
+image:
+  repository: node
+  tag: "18-alpine"
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+config:
+  dbHost: "database-database.production.svc.cluster.local"
+  dbPort: "5432"
+  dbName: "appdb"
+  redisUrl: "redis://redis-redis.production.svc.cluster.local:6379"
+  logLevel: "error"
+
+secrets:
+  dbUser: "prod_user"
+  dbPassword: "CHANGEME_USE_SEALED_SECRETS"
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 15
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+environment: production
+
+syncWave: "1"

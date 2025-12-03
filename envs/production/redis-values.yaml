@@ -1,0 +1,19 @@
+# Production environment values for Redis
+
+replicaCount: 2
+
+image:
+  repository: redis
+  tag: "7-alpine"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+environment: production
+
+syncWave: "0"

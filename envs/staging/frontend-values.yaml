@@ -1,0 +1,37 @@
+# Staging environment values for Frontend
+
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "alpine"
+
+resources:
+  limits:
+    cpu: 400m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+config:
+  backendUrl: "http://backend-backend.staging.svc.cluster.local:8080"
+  logLevel: "info"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: staging.votreapp.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+autoscaling:
+  enabled: false
+
+environment: staging
+
+syncWave: "2"

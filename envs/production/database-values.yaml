@@ -1,0 +1,28 @@
+# Production environment values for Database
+
+image:
+  repository: postgres
+  tag: "15-alpine"
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+
+config:
+  database: "appdb"
+
+secrets:
+  username: "prod_user"
+  password: "CHANGEME_USE_SEALED_SECRETS"
+
+persistence:
+  enabled: true
+  size: 20Gi
+
+environment: production
+
+syncWave: "0"

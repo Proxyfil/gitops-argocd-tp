@@ -1,0 +1,19 @@
+# Development environment values for Redis
+
+replicaCount: 1
+
+image:
+  repository: redis
+  tag: "7-alpine"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+environment: dev
+
+syncWave: "0"

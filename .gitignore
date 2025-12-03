@@ -1,0 +1,26 @@
+# Helm
+*.tgz
+charts/*/charts/
+charts/*/*.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# Kubernetes
+*.kubeconfig
+
+# Local testing
+test-output/

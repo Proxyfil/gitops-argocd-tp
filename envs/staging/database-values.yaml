@@ -1,0 +1,28 @@
+# Staging environment values for Database
+
+image:
+  repository: postgres
+  tag: "15-alpine"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+config:
+  database: "appdb"
+
+secrets:
+  username: "staging_user"
+  password: "staging_password_456"
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+environment: staging
+
+syncWave: "0"
