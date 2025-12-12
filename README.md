@@ -1,30 +1,56 @@
 # GitOps ArgoCD TP - Multi-Environment Microservices Deployment
 
-Ce projet implémente une architecture GitOps complète pour le déploiement d'une application microservices sur Kubernetes en utilisant ArgoCD.
+
+# Script pour mettre à jour les URLs du repository dans tous les manifests ArgoCDCe projet implémente une architecture GitOps complète pour le déploiement d'une application microservices sur Kubernetes en utilisant ArgoCD.
+
+# Usage: ./update-repo-url.sh https://github.com/YOUR_USERNAME/gitops-argocd-tp.git
 
 ## 🏗️ Architecture
 
-L'application se compose de 4 microservices :
-- **Frontend** : Interface utilisateur (Nginx)
-- **Backend** : API REST (Node.js)
-- **Database** : PostgreSQL (avec StatefulSet et persistence)
-- **Redis** : Cache en mémoire
+if [ -z "$1" ]; then
 
-## 📁 Structure du projet
+  echo "❌ Erreur: URL du repository manquante"L'application se compose de 4 microservices :
 
-```
+  echo "Usage: $0 <REPO_URL>"- **Frontend** : Interface utilisateur (Nginx)
+
+  echo "Exemple: $0 https://github.com/votre-username/gitops-argocd-tp.git"- **Backend** : API REST (Node.js)
+
+  exit 1- **Database** : PostgreSQL (avec StatefulSet et persistence)
+
+fi- **Redis** : Cache en mémoire
+
+
+
+REPO_URL="$1"## 📁 Structure du projet
+
+
+
+echo "🔄 Mise à jour des URLs du repository vers: $REPO_URL"```
+
 gitops-argocd-tp/
-├── charts/                      # Helm charts des microservices
-│   ├── frontend/
+
+# Trouver et remplacer dans tous les fichiers YAML ArgoCD├── charts/                      # Helm charts des microservices
+
+find argocd/ -name "*.yaml" -type f -exec sed -i "s|REPLACE_WITH_YOUR_REPO_URL|$REPO_URL|g" {} \;│   ├── frontend/
+
 │   ├── backend/
-│   ├── database/
-│   └── redis/
+
+echo "✅ URLs mises à jour dans les fichiers suivants:"│   ├── database/
+
+grep -r "$REPO_URL" argocd/ --include="*.yaml" | cut -d: -f1 | sort -u│   └── redis/
+
 ├── envs/                        # Values files par environnement
-│   ├── dev/
-│   ├── staging/
-│   └── production/
-└── argocd/                      # Définitions ArgoCD
-    ├── applications/
+
+echo ""│   ├── dev/
+
+echo "📝 N'oubliez pas de commiter et pousser les changements:"│   ├── staging/
+
+echo "   git add argocd/"│   └── production/
+
+echo "   git commit -m 'Update repository URLs in ArgoCD manifests'"└── argocd/                      # Définitions ArgoCD
+
+echo "   git push"    ├── applications/
+
     └── applicationsets/
 ```
 
@@ -55,9 +81,31 @@ Les microservices sont déployés dans l'ordre suivant grâce aux sync waves Arg
 - ArgoCD installé sur le cluster
 - Git
 
-## 📦 Installation locale
+## 📦 Installation
 
-### 1. Validation des Helm Charts
+### Option 1 : Déploiement avec ArgoCD (Recommandé)
+
+**Voir le guide complet** : [argocd/DEPLOYMENT.md](argocd/DEPLOYMENT.md)
+
+```bash
+# 1. Installer ArgoCD sur votre cluster
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# 2. Pousser ce repository vers Git et mettre à jour les URLs
+git remote add origin https://github.com/YOUR_USERNAME/gitops-argocd-tp.git
+git push -u origin master
+
+# 3. Déployer avec App of Apps (dev uniquement)
+kubectl apply -f argocd/applications/app-of-apps.yaml
+
+# OU déployer tous les environnements avec ApplicationSet
+kubectl apply -f argocd/applicationsets/microservices-appset.yaml
+```
+
+### Option 2 : Test local avec Helm (sans ArgoCD)
+
+#### 1. Validation des Helm Charts
 
 ```bash
 # Lint tous les charts
@@ -73,7 +121,7 @@ helm template database charts/database -f envs/dev/database-values.yaml
 helm template redis charts/redis -f envs/dev/redis-values.yaml
 ```
 
-### 2. Test en local (sans ArgoCD)
+#### 2. Installation manuelle
 
 ```bash
 # Créer le namespace
@@ -89,7 +137,7 @@ helm install frontend charts/frontend -f envs/dev/frontend-values.yaml -n dev
 kubectl get all -n dev
 ```
 
-### 3. Nettoyage
+#### 3. Nettoyage
 
 ```bash
 helm uninstall frontend backend database redis -n dev

@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: microservices-appset
+  namespace: argocd
+spec:
+  generators:
+    # Matrix generator: combine environments and microservices
+    - matrix:
+        generators:
+          # List of environments
+          - list:
+              elements:
+                - env: dev
+                  namespace: dev
+                - env: staging
+                  namespace: staging
+                - env: production
+                  namespace: production
+          # List of microservices
+          - list:
+              elements:
+                - name: frontend
+                  chart: charts/frontend
+                - name: backend
+                  chart: charts/backend
+                - name: database
+                  chart: charts/database
+                - name: redis
+                  chart: charts/redis
+  template:
+    metadata:
+      name: "{{name}}-{{env}}"
+      labels:
+        environment: "{{env}}"
+        microservice: "{{name}}"
+    spec:
+      project: default
+      source:
+        repoURL: "REPLACE_WITH_YOUR_REPO_URL"
+        targetRevision: HEAD
+        path: "{{chart}}"
+        helm:
+          valueFiles:
+            - "../../envs/{{env}}/{{name}}-values.yaml"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
